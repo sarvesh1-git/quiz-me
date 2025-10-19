@@ -38,6 +38,7 @@ export default function QuizPage() {
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [result, setResult] = useState<QuizResult | null>(null);
+  const [alreadyCompleted, setAlreadyCompleted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -57,6 +58,18 @@ export default function QuizPage() {
 
   const fetchQuiz = async () => {
     try {
+      // First check if quiz is already completed
+      const statusResponse = await fetch('/api/quiz-status');
+      if (statusResponse.ok) {
+        const statusData = await statusResponse.json();
+        if (statusData.isCompleted) {
+          setAlreadyCompleted(true);
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Fetch the quiz
       const response = await fetch('/api/quiz');
       if (!response.ok) {
         throw new Error('No quiz available for today');
@@ -140,6 +153,34 @@ export default function QuizPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-400 via-pink-400 to-yellow-400">
         <div className="text-white text-2xl font-bold animate-pulse">Loading quiz...</div>
+      </div>
+    );
+  }
+
+  if (alreadyCompleted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-400 via-pink-400 to-yellow-400 p-4">
+        <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md text-center">
+          <div className="text-6xl mb-4">✅</div>
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">Already Completed!</h1>
+          <p className="text-gray-600 mb-6">
+            You've already completed today's quiz. Come back tomorrow for a new challenge!
+          </p>
+          <div className="flex gap-4 justify-center">
+            <button
+              onClick={() => router.push('/')}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-full font-bold hover:scale-105 transition-transform"
+            >
+              Go Home
+            </button>
+            <button
+              onClick={() => router.push('/results')}
+              className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-6 py-3 rounded-full font-bold hover:scale-105 transition-transform"
+            >
+              View Results
+            </button>
+          </div>
+        </div>
       </div>
     );
   }

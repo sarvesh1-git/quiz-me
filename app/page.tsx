@@ -7,6 +7,7 @@ import { Brain, Trophy, Clock, Sparkles, BookOpen } from 'lucide-react';
 export default function Home() {
   const [greeting, setGreeting] = useState('');
   const [hasQuizToday, setHasQuizToday] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,10 +25,15 @@ export default function Home() {
 
   const checkTodayQuiz = async () => {
     try {
-      const response = await fetch('/api/quiz');
-      setHasQuizToday(response.ok);
+      const response = await fetch('/api/quiz-status');
+      if (response.ok) {
+        const data = await response.json();
+        setHasQuizToday(data.hasQuiz);
+        setIsCompleted(data.isCompleted);
+      }
     } catch (error) {
       setHasQuizToday(false);
+      setIsCompleted(false);
     } finally {
       setLoading(false);
     }
@@ -54,16 +60,22 @@ export default function Home() {
             {/* Start Quiz Card */}
             <Link
               href="/quiz"
-              className={`group relative overflow-hidden bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl p-8 text-white hover:scale-105 transition-transform ${
-                loading || !hasQuizToday ? 'opacity-50 pointer-events-none' : ''
+              className={`group relative overflow-hidden rounded-2xl p-8 text-white hover:scale-105 transition-transform ${
+                loading || !hasQuizToday || isCompleted
+                  ? 'opacity-50 pointer-events-none bg-gradient-to-br from-gray-400 to-gray-500'
+                  : 'bg-gradient-to-br from-green-400 to-emerald-500'
               }`}
             >
               <div className="relative z-10">
                 <Brain className="mb-4" size={48} />
-                <h2 className="text-2xl font-bold mb-2">Start Quiz</h2>
-                <p className="text-green-50">
+                <h2 className="text-2xl font-bold mb-2">
+                  {isCompleted ? 'Quiz Completed! ✅' : 'Start Quiz'}
+                </h2>
+                <p className={isCompleted ? 'text-gray-100' : 'text-green-50'}>
                   {loading
                     ? 'Loading...'
+                    : isCompleted
+                    ? "You've already completed today's quiz!"
                     : hasQuizToday
                     ? "Today's quiz is ready!"
                     : 'No quiz available today'}

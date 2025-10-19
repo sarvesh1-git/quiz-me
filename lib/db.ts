@@ -1,6 +1,24 @@
 import { sql } from '@vercel/postgres';
 import { Quiz, Question, Result } from './types';
 
+// Ensure connection string is available
+if (!process.env.POSTGRES_URL && typeof window === 'undefined') {
+  console.error('⚠️ POSTGRES_URL environment variable is not set!');
+  console.error('Available POSTGRES env vars:', Object.keys(process.env).filter(k => k.includes('POSTGRES')));
+}
+
+// Helper function to get today's date in Asia/Kolkata timezone
+function getTodayDateInKolkata(): string {
+  const now = new Date();
+  // Convert to Asia/Kolkata timezone (UTC+5:30)
+  const kolkataTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+  // Format as YYYY-MM-DD
+  const year = kolkataTime.getFullYear();
+  const month = String(kolkataTime.getMonth() + 1).padStart(2, '0');
+  const day = String(kolkataTime.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export async function initDatabase() {
   try {
     // Create quizzes table (removed UNIQUE constraint on date to allow multiple questions per day)
@@ -37,7 +55,7 @@ export async function initDatabase() {
 
 export async function getTodayQuiz(): Promise<Quiz | null> {
   try {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getTodayDateInKolkata();
     
     const { rows } = await sql`
       SELECT * FROM quizzes 
@@ -132,7 +150,7 @@ export async function addQuiz(
 
 export async function hasCompletedTodayQuiz(): Promise<boolean> {
   try {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getTodayDateInKolkata();
     
     const { rows } = await sql`
       SELECT COUNT(*) as count FROM results 
