@@ -1,0 +1,17 @@
+# Vercel Postgres Environment Variables
+# Copy this file to .env.local and fill in your actual values
+
+POSTGRES_URL="postgres://..."
+POSTGRES_PRISMA_URL="postgres://..."
+POSTGRES_URL_NON_POOLING="postgres://..."
+POSTGRES_USER=""
+POSTGRES_HOST=""
+POSTGRES_PASSWORD=""
+POSTGRES_DATABASE=""
+
+# Instructions:
+# 1. Create a Vercel Postgres database at https://vercel.com
+# 2. Go to Storage tab and create a new Postgres database
+# 3. Copy the connection strings from Vercel
+# 4. Create a .env.local file with the values above
+# 5. Never commit .env.local to git (it's in .gitignore)
