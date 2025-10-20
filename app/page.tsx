@@ -32,6 +32,7 @@ export default function Home() {
         setIsCompleted(data.isCompleted);
       }
     } catch (error) {
+      console.error('Error checking today quiz:', error);
       setHasQuizToday(false);
       setIsCompleted(false);
     } finally {

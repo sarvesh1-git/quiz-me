@@ -136,7 +136,7 @@ export default function QuizPage() {
           origin: { y: 0.6 },
         });
       }
-    } catch (err) {
+    } catch {
       alert('Failed to submit quiz. Please try again.');
     } finally {
       setIsSubmitting(false);
@@ -164,7 +164,7 @@ export default function QuizPage() {
           <div className="text-6xl mb-4">✅</div>
           <h1 className="text-2xl font-bold text-gray-800 mb-4">Already Completed!</h1>
           <p className="text-gray-600 mb-6">
-            You've already completed today's quiz. Come back tomorrow for a new challenge!
+            You&apos;ve already completed today&apos;s quiz. Come back tomorrow for a new challenge!
           </p>
           <div className="flex gap-4 justify-center">
             <button
